@@ -158,19 +158,26 @@ namespace DatabaseFirstLINQ
         private void ProblemEleven()
         {
             // Create a new User object and add that user to the Users table using LINQ.
-            //User newUser = new User()
-            //{
-            //    Email = "david@gmail.com",
-            //    Password = "DavidsPass123"
-            //};
-            //_context.Users.Add(newUser);
-            //_context.SaveChanges();
+            User newUser = new User()
+            {
+                Email = "david@gmail.com",
+                Password = "DavidsPass123"
+            };
+            _context.Users.Add(newUser);
+            _context.SaveChanges();
         }
 
         private void ProblemTwelve()
         {
             // Create a new Product object and add that product to the Products table using LINQ.
-
+            Product newProduct = new Product()
+            {
+                Name = "dCC Course",
+                Description = "12-week course designed to make a web developer",
+                Price = 15000
+            };
+            _context.Products.Add(newProduct);
+            _context.SaveChanges();
         }
 
         private void ProblemThirteen()

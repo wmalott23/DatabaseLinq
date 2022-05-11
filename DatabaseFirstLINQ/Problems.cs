@@ -36,7 +36,8 @@ namespace DatabaseFirstLINQ
             //ProblemNineteen();
             //ProblemTwenty();
             //BonusOne();
-            BonusTwo();
+            //BonusTwo();
+            BonusThree();
         }
 
         // <><><><><><><><> R Actions (Read) <><><><><><><><><>
@@ -326,6 +327,72 @@ namespace DatabaseFirstLINQ
             // 3. If the user does not succesfully sing in
             // a. Display "Invalid Email or Password"
             // b. Re-prompt the user for credentials
+            bool signedIn = false;
+            string email;
+            string pass;
+            do
+            {
+                Console.WriteLine("Please enter your email");
+                email = Console.ReadLine();
+                Console.WriteLine("Please enter your password");
+                pass = Console.ReadLine();
+                bool validEmail = _context.Users.Where(u => u.Email == email).Any();
+                bool validPass = _context.Users.Where(u => u.Password== pass).Any();
+                if (validEmail && validPass)
+                {
+                    signedIn = true;
+                    Console.WriteLine("Signed In!");
+                }
+                else Console.WriteLine("Invalid Email or Password");
+            }
+            while (!signedIn);
+            int userId = Convert.ToInt16(_context.Users.Where(u => u.Email == email).Select(u => u.Id));
+            Console.WriteLine("Please enter 1 for the products page");
+            Console.WriteLine("Please enter 2 for the shopping cart page");
+            int decision = Convert.ToInt16(Console.ReadLine());
+            if (decision != 1 || decision != 2) Console.WriteLine("Invalid input, please enter 1 or 2");
+            var shoppingCartIds = _context.ShoppingCarts.Include(p => p.Product).Include(p => p.User).Where(p => p.UserId == userId).Select(p => p.ProductId);
+            Console.WriteLine(shoppingCartIds);
+            if(decision == 1)
+            {
+                var products = _context.Products.ToList();
+                var productIds = _context.Products.Select(u => u.Id).ToList();
+                foreach (var item in products)
+	            {
+                    Console.WriteLine(item);
+	            }
+                do
+                {
+                    Console.WriteLine("Please enter the ID of the item you would like to add to the shopping cart");
+                    Console.WriteLine("Please enter 0 if you would like to return to the main menu");
+                    int choice = Convert.ToInt16(Console.ReadLine());
+                    if(productIds.Contains(choice))
+                    {   
+                        if(shoppingCartIds.Contains(choice))
+                        {
+                            var product = _context.ShoppingCarts.Include(p => p.Product).Include(u => u.User).Where(u => u.UserId == userId && u.ProductId == choice).FirstOrDefault();
+                            product.Quantity++;
+                            _context.ShoppingCarts.Update(product);
+                            _context.SaveChanges();
+                        }
+                        else
+                        {
+                            ShoppingCart newShoppingCart = new ShoppingCart()
+                            {
+                                UserId = userId,
+                                ProductId = choice,
+                                Quantity = 1
+                            };
+                            _context.ShoppingCarts.Add(newShoppingCart);
+                            _context.SaveChanges();
+                        }
+                }
+                while(!productIds.Contains(choice) && choice != 0);
+            }
+
+
+
+
 
         }
 
